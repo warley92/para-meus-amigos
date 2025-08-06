@@ -74,20 +74,6 @@
         .hidden-link {
             cursor: pointer;
         }
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            margin: 20px 0;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
         #runawayButton {
             position: absolute;
             transition: all 0.3s ease;
@@ -99,6 +85,11 @@
             50% { transform: translateX(5px); }
             75% { transform: translateX(-5px); }
             100% { transform: translateX(0); }
+        }
+        .audio-player {
+            margin: 20px 0;
+            width: 100%;
+            max-width: 400px;
         }
     </style>
 </head>
@@ -150,9 +141,10 @@
 
     <!-- Página 5 - Mensagem Final -->
     <div id="page5" class="page">
-        <div class="video-container">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/qJR_Wce00SU?autoplay=" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
+        <audio id="backgroundMusic" autoplay loop>
+            <source src="music1.mp3" type="audio/mpeg">
+            Seu navegador não suporta o elemento de áudio.
+        </audio>
         <h2>Obrigado por chegar até aqui! 💖😊</h2>
         <div id="finalMessage"></div>
         <button id="backButton4">Voltar</button>
@@ -194,6 +186,7 @@
 
         // Elementos da página 5
         const finalMessageDiv = document.getElementById('finalMessage');
+        const backgroundMusic = document.getElementById('backgroundMusic');
 
         // Controle de páginas
         let currentPage = 1;
@@ -212,6 +205,11 @@
             pages.forEach(page => page.classList.remove('active'));
             document.getElementById(`page${pageNumber}`).classList.add('active');
             currentPage = pageNumber;
+            
+            // Toca a música quando chegar na página 5
+            if (pageNumber === 5) {
+                backgroundMusic.play().catch(e => console.log("Autoplay bloqueado:", e));
+            }
         }
 
         // Página 1 - Entrar
@@ -278,39 +276,39 @@
             const buttonWidth = runawayButton.offsetWidth;
             const buttonHeight = runawayButton.offsetHeight;
                 
-                // Define a área máxima de movimento (80% da tela)
-                const maxMovementArea = {
-                    width: window.innerWidth * 0.7,
-                    height: window.innerHeight * 0.6
-                };
+            // Define a área máxima de movimento (80% da tela)
+            const maxMovementArea = {
+                width: window.innerWidth * 0.7,
+                height: window.innerHeight * 0.6
+            };
+            
+            // Centraliza a área de movimento
+            const areaStartX = (window.innerWidth - maxMovementArea.width) / 2;
+            const areaStartY = (window.innerHeight - maxMovementArea.height) / 3; // Um pouco mais para cima
+
+            function moveButton() {
+                // Calcula novas posições dentro da área delimitada
+                const newX = areaStartX + Math.random() * (maxMovementArea.width - buttonWidth);
+                const newY = areaStartY + Math.random() * (maxMovementArea.height - buttonHeight);
                 
-                // Centraliza a área de movimento
-                const areaStartX = (window.innerWidth - maxMovementArea.width) / 2;
-                const areaStartY = (window.innerHeight - maxMovementArea.height) / 3; // Um pouco mais para cima
-
-                function moveButton() {
-                    // Calcula novas posições dentro da área delimitada
-                    const newX = areaStartX + Math.random() * (maxMovementArea.width - buttonWidth);
-                    const newY = areaStartY + Math.random() * (maxMovementArea.height - buttonHeight);
-                    
-                    runawayButton.style.left = `${newX}px`;
-                    runawayButton.style.top = `${newY}px`;
-                }
-
-                // Eventos para desktop e mobile
-                runawayButton.addEventListener('mouseover', moveButton);
-                runawayButton.addEventListener('click', moveButton);
-                runawayButton.addEventListener('touchstart', function(e) {
-                    e.preventDefault();
-                    moveButton();
-                });
-
-                // Move o botão periodicamente também (mais devagar)
-                setInterval(moveButton, 4000);
-                
-                // Posição inicial
-                moveButton();
+                runawayButton.style.left = `${newX}px`;
+                runawayButton.style.top = `${newY}px`;
             }
+
+            // Eventos para desktop e mobile
+            runawayButton.addEventListener('mouseover', moveButton);
+            runawayButton.addEventListener('click', moveButton);
+            runawayButton.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                moveButton();
+            });
+
+            // Move o botão periodicamente também (mais devagar)
+            setInterval(moveButton, 4000);
+            
+            // Posição inicial
+            moveButton();
+        }
 
         // Configura o botão fujão quando a página 4 é carregada
         document.getElementById('page4').addEventListener('click', setupRunawayButton, { once: true });
@@ -344,7 +342,4 @@
         }
     </script>
 </body>
-
 </html>
-
-
