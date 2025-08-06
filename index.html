@@ -277,32 +277,40 @@
         function setupRunawayButton() {
             const buttonWidth = runawayButton.offsetWidth;
             const buttonHeight = runawayButton.offsetHeight;
-            
-            function moveButton() {
-                const maxX = window.innerWidth - buttonWidth - 20;
-                const maxY = window.innerHeight - buttonHeight - 20;
                 
-                const newX = Math.max(20, Math.floor(Math.random() * maxX));
-                const newY = Math.max(20, Math.floor(Math.random() * maxY));
+                // Define a área máxima de movimento (80% da tela)
+                const maxMovementArea = {
+                    width: window.innerWidth * 0.8,
+                    height: window.innerHeight * 0.7
+                };
                 
-                runawayButton.style.left = `${newX}px`;
-                runawayButton.style.top = `${newY}px`;
-            }
+                // Centraliza a área de movimento
+                const areaStartX = (window.innerWidth - maxMovementArea.width) / 2;
+                const areaStartY = (window.innerHeight - maxMovementArea.height) / 3; // Um pouco mais para cima
 
-            // Eventos para desktop e mobile
-            runawayButton.addEventListener('mouseover', moveButton);
-            runawayButton.addEventListener('click', moveButton);
-            runawayButton.addEventListener('touchstart', function(e) {
-                e.preventDefault();
+                function moveButton() {
+                    // Calcula novas posições dentro da área delimitada
+                    const newX = areaStartX + Math.random() * (maxMovementArea.width - buttonWidth);
+                    const newY = areaStartY + Math.random() * (maxMovementArea.height - buttonHeight);
+                    
+                    runawayButton.style.left = `${newX}px`;
+                    runawayButton.style.top = `${newY}px`;
+                }
+
+                // Eventos para desktop e mobile
+                runawayButton.addEventListener('mouseover', moveButton);
+                runawayButton.addEventListener('click', moveButton);
+                runawayButton.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    moveButton();
+                });
+
+                // Move o botão periodicamente também (mais devagar)
+                setInterval(moveButton, 4000);
+                
+                // Posição inicial
                 moveButton();
-            });
-
-            // Move o botão periodicamente também
-            setInterval(moveButton, 3000);
-            
-            // Posição inicial
-            moveButton();
-        }
+            }
 
         // Configura o botão fujão quando a página 4 é carregada
         document.getElementById('page4').addEventListener('click', setupRunawayButton, { once: true });
