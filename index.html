@@ -11,6 +11,8 @@
             background-color: #f0f0f0;
             padding: 20px;
             transition: background-color 0.5s;
+            position: relative;
+            min-height: 100vh;
         }
         .page {
             background-color: white;
@@ -20,6 +22,7 @@
             max-width: 600px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             display: none;
+            position: relative;
         }
         .active {
             display: block;
@@ -58,10 +61,6 @@
             min-height: 20px;
             margin: 10px;
         }
-        #runawayButton {
-            position: relative;
-            transition: all 0.1s;
-        }
         #finalMessage {
             font-size: 18px;
             line-height: 1.6;
@@ -92,7 +91,14 @@
         #runawayButton {
             position: absolute;
             transition: all 0.3s ease;
-            touch-action: none; /* Importante para mobile */
+            touch-action: none;
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
         }
     </style>
 </head>
@@ -267,50 +273,43 @@
         document.getElementById('backButton2').addEventListener('click', () => showPage(2));
         nextButton2.addEventListener('click', () => showPage(4));
 
-        // Página 4 - Botão que foge
-// Substitua o código existente do botão fujão por este:
-    const runawayButton = document.getElementById('runawayButton');
-    const buttonWidth = 100; // Largura aproximada do botão
-    const buttonHeight = 50; // Altura aproximada do botão
-    
-    function moveButton() {
-        // Calcula novas posições garantindo que o botão não saia da tela
-        const maxX = window.innerWidth - buttonWidth;
-        const maxY = window.innerHeight - buttonHeight;
-        
-        // Garante margem mínima de 20px das bordas
-        const newX = Math.max(20, Math.random() * (maxX - 40));
-        const newY = Math.max(20, Math.random() * (maxY - 40));
-        
-        runawayButton.style.left = `${newX}px`;
-        runawayButton.style.top = `${newY}px`;
-    }
+        // Página 4 - Botão que foge (versão melhorada)
+        function setupRunawayButton() {
+            const buttonWidth = runawayButton.offsetWidth;
+            const buttonHeight = runawayButton.offsetHeight;
+            
+            function moveButton() {
+                const maxX = window.innerWidth - buttonWidth - 20;
+                const maxY = window.innerHeight - buttonHeight - 20;
+                
+                const newX = Math.max(20, Math.floor(Math.random() * maxX));
+                const newY = Math.max(20, Math.floor(Math.random() * maxY));
+                
+                runawayButton.style.left = `${newX}px`;
+                runawayButton.style.top = `${newY}px`;
+            }
 
-    // Eventos para desktop (mouse)
-    runawayButton.addEventListener('mouseover', moveButton);
-    runawayButton.addEventListener('click', moveButton);
+            // Eventos para desktop e mobile
+            runawayButton.addEventListener('mouseover', moveButton);
+            runawayButton.addEventListener('click', moveButton);
+            runawayButton.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                moveButton();
+            });
 
-    // Eventos para mobile (toque)
-    runawayButton.addEventListener('touchstart', function(e) {
-        e.preventDefault(); // Impede comportamento padrão
-        moveButton();
-    });
+            // Move o botão periodicamente também
+            setInterval(moveButton, 3000);
+            
+            // Posição inicial
+            moveButton();
+        }
 
-    // Posiciona o botão inicialmente
-    moveButton();
-
-    // Mantenha o resto do código existente...
-    const realNext = document.getElementById('realNext');
-    realNext.addEventListener('click', () => {
-        showPage(5);
-        typeWriter(finalMessageText, finalMessageDiv, 30);
-    });
-    document.getElementById('backButton3').addEventListener('click', () => showPage(3));
+        // Configura o botão fujão quando a página 4 é carregada
+        document.getElementById('page4').addEventListener('click', setupRunawayButton, { once: true });
 
         // Página 4 - Botão real escondido no texto
         realNext.addEventListener('click', () => {
             showPage(5);
-            // Iniciar efeito de digitação
             typeWriter(finalMessageText, finalMessageDiv, 30);
         });
 
@@ -335,21 +334,6 @@
             
             typing();
         }
-
-        // CSS adicional para animação de shake
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes shake {
-                0% { transform: translateX(0); }
-                25% { transform: translateX(-5px); }
-                50% { transform: translateX(5px); }
-                75% { transform: translateX(-5px); }
-                100% { transform: translateX(0); }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
-
 </html>
-
