@@ -89,6 +89,11 @@
             width: 100%;
             height: 100%;
         }
+        #runawayButton {
+            position: absolute;
+            transition: all 0.3s ease;
+            touch-action: none; /* Importante para mobile */
+        }
     </style>
 </head>
 <body>
@@ -263,17 +268,44 @@
         nextButton2.addEventListener('click', () => showPage(4));
 
         // Página 4 - Botão que foge
-        runawayButton.addEventListener('mouseover', () => {
-            const maxX = window.innerWidth - 100;
-            const maxY = window.innerHeight - 50;
-            
-            const randomX = Math.floor(Math.random() * maxX);
-            const randomY = Math.floor(Math.random() * maxY);
-            
-            runawayButton.style.position = "absolute";
-            runawayButton.style.left = `${randomX}px`;
-            runawayButton.style.top = `${randomY}px`;
-        });
+// Substitua o código existente do botão fujão por este:
+    const runawayButton = document.getElementById('runawayButton');
+    const buttonWidth = 100; // Largura aproximada do botão
+    const buttonHeight = 50; // Altura aproximada do botão
+    
+    function moveButton() {
+        // Calcula novas posições garantindo que o botão não saia da tela
+        const maxX = window.innerWidth - buttonWidth;
+        const maxY = window.innerHeight - buttonHeight;
+        
+        // Garante margem mínima de 20px das bordas
+        const newX = Math.max(20, Math.random() * (maxX - 40));
+        const newY = Math.max(20, Math.random() * (maxY - 40));
+        
+        runawayButton.style.left = `${newX}px`;
+        runawayButton.style.top = `${newY}px`;
+    }
+
+    // Eventos para desktop (mouse)
+    runawayButton.addEventListener('mouseover', moveButton);
+    runawayButton.addEventListener('click', moveButton);
+
+    // Eventos para mobile (toque)
+    runawayButton.addEventListener('touchstart', function(e) {
+        e.preventDefault(); // Impede comportamento padrão
+        moveButton();
+    });
+
+    // Posiciona o botão inicialmente
+    moveButton();
+
+    // Mantenha o resto do código existente...
+    const realNext = document.getElementById('realNext');
+    realNext.addEventListener('click', () => {
+        showPage(5);
+        typeWriter(finalMessageText, finalMessageDiv, 30);
+    });
+    document.getElementById('backButton3').addEventListener('click', () => showPage(3));
 
         // Página 4 - Botão real escondido no texto
         realNext.addEventListener('click', () => {
@@ -320,3 +352,4 @@
 </body>
 
 </html>
+
